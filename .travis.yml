@@ -21,7 +21,7 @@ install:
 
 script:
   - echo "Tests are currently disabled. Enable them when you are ready to test."
-  - pylint mt2414/main.py
+  #- pylint mt2414/main.py
   #- run unit tests
 
 after_script:
