@@ -15,9 +15,10 @@ import uuid
 import urllib.request
 from functools import wraps
 import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import re
-from xlrd import open_workbook
+# import xlrd # disabling, pylint recommendation
+# from xlrd import open_workbook
 import json
 import ast
 import logging
@@ -73,7 +74,7 @@ def auth():
     if not est:
         logging.warning('Unregistered user \'%s\' login attempt unsuccessful' % email)
         return '{"success":false, "message":"Invalid email"}'
-    cursor.execute("SELECT u.password_hash, u.password_salt, r.name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.email = %s and u.email_verified is True", (email,))
+    cursor.execute("SELECT u.password_hash, u.password_salt, r.name FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.email = %s", (email,))
     rst = cursor.fetchone()
     if not rst:
         return '{"success":false, "message":"Email is not Verified"}'
@@ -95,7 +96,7 @@ def new_registration():
     headers = {"api-key": sendinblue_key}
     url = "https://api.sendinblue.com/v2.0/email"
     verification_code = str(uuid.uuid4()).replace("-", "")
-    body = '''Hi,<br/><br/>Thanks for your interest to use the AutographaMT web service. <br/>
+q    body = '''Hi,<br/><br/>Thanks for your interest to use the AutographaMT web service. <br/>
     You need to confirm your email by opening this link:
 
     <a href="https://api.mt2414.in/v1/verifications/%s">https://api.mt2414.in/v1/verifications/%s</a>
@@ -112,8 +113,7 @@ def new_registration():
     password_hash = scrypt.hash(password, password_salt)
     cursor = connection.cursor()
     cursor.execute("SELECT email FROM users WHERE email = %s", (email,))
-    rst = cursor.fetchone()
-    if not rst:
+    if not cursor.fetchone():
         cursor.execute("INSERT INTO users (email, verification_code, password_hash, password_salt, created_at) VALUES (%s, %s, %s, %s, current_timestamp)", (email, verification_code, password_hash, password_salt))
         cursor.close()
         connection.commit()

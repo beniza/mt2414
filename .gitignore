@@ -4,3 +4,8 @@ mt2414.egg-info/
 __pycache__/
 venv3/
 mt2414/server_setup.md
+API_logs.log
+dist/
+nano.save
+venv/
+
