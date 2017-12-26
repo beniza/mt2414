@@ -1,4 +1,5 @@
 *~
+.travis.yml
 mt2414.egg-info/
 __pycache__/
 venv3/
